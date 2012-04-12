@@ -1,15 +1,15 @@
 Installation Guide
 ==================
 
-The following is an installation on how to set up and deploy the
+The following is an installation guide on the
 Candidates Emailer web application.
 
 AWS EC2 Instance Setup
 ----------------------
 
-A micro or small instance is suitable for install this
+A micro or small instance is suitable for installing this
 application. Remember to place the instance in a security group with
-HTTP and HTTPS (port 80 and port 443) open.
+the HTTP and HTTPS (port 80 and port 443) open.
 
 
 Prerequisites
@@ -22,12 +22,15 @@ file.
 Append these lines to: `/etc/apt/sources.list`
 
 > deb http://nginx.org/packages/ubuntu/ lucid nginx
+
 > deb-src http://nginx.org/packages/ubuntu/ lucid nginx
 
 Then install the following Debian/Ubuntu packages:
 
 > sudo apt-get update
+
 > sudo apt-get install nginx python-dev libxml2-dev python-setuptools
+
 > build-essential git-core
 
 Install the `pip` Python package manager:
@@ -46,6 +49,7 @@ and virtualenvwrapper package:
 Add the following lines to the user's `bashrc` file:
 
 > echo "export WORKON_HOME='~/.virtualenvs' >> ~/.bashrc
+
 > echo "source virtualenvwrapper.sh" >> ~/.bashrc
 
 
@@ -70,7 +74,9 @@ Make sure you have activated the `odesk` virtualenv and run the
 following commands:
 
 > workon odesk
+
 > cd ~/candidates_emailer
+
 > pip install -r requirements.txt
 
 
@@ -89,22 +95,22 @@ different paths, make sure the paths in `deploy/uwsgi.ini` and
 
 Create and append the following file in: `/etc/init/uwsgi.conf`
 
-> # file: /etc/init/uwsgi.conf
-> description "uWSGI starter"
-> 
-> start on (local-filesystems and runlevel [2345])
-> stop on runlevel [016]
-> 
-> respawn
-> 
-> # home - is the path to our virtualenv directory
-> # pythonpath - the path to our django application
-> # module - the wsgi handler python script
-> 
-> exec /home/ubuntu/.virtualenvs/odesk/bin/uwsgi \
-> --uid ubuntu \
-> --gid ubuntu \
-> --ini /home/ubuntu/candidates_emailer/deploy/uwsgi.ini
+>    # file: /etc/init/uwsgi.conf
+>    description "uWSGI starter"
+>     
+>    start on (local-filesystems and runlevel [2345])
+>    stop on runlevel [016]
+>     
+>    respawn
+>     
+>    # home - is the path to our virtualenv directory
+>    # pythonpath - the path to our django application
+>    # module - the wsgi handler python script
+>     
+>    exec /home/ubuntu/.virtualenvs/odesk/bin/uwsgi \
+>    --uid ubuntu \
+>    --gid ubuntu \
+>    --ini /home/ubuntu/candidates_emailer/deploy/uwsgi.ini
 
 Change the following lines in the Nginx conf:
 `/etc/nginx/conf.d/default.conf`
