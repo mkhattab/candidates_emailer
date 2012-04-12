@@ -2,12 +2,29 @@ import sys
 
 from flask import Flask
 from flask import render_template
+from flaskext.odesk import odesk
+
+try:
+    import odesk_settings
+except ImportError:
+    raise ImportError("Please create an odesk_settings.py file with secret keys")
 
 app = Flask(__name__)
+app.config.from_pyfile("settings.py")
+app.register_module(odesk, url_prefix="/odesk")
+
 
 @app.route("/")
 def index():
    return render_template("index.html")
+
+
+@app.route("/authorize-test")
+def authorize():
+    if odesk.is_authorized():
+        return "You are authorized!"
+    else:
+        return "Not authorized!"
 
 
 if __name__ == '__main__':
