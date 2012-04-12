@@ -1,7 +1,7 @@
 Installation Guide
 ==================
 
-The following is an installation guide on the
+The following is an installation guide to the
 Candidates Emailer web application.
 
 AWS EC2 Instance Setup
