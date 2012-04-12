@@ -1,3 +1,3 @@
 *.pyc
 odesk_settings.py
-log/*.log
+project/log/*.log
