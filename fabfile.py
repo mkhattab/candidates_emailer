@@ -19,3 +19,4 @@ def deploy():
         REMOTE_PROJECT_DIR, "..", ".virtualenvs", "odesk", "bin", "activate"))):
         with cd(REMOTE_PROJECT_DIR):
             run("git pull")
+            sudo("restart uwsgi")
