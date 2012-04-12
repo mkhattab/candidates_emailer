@@ -28,7 +28,7 @@ def authorize():
 
 
 if __name__ == '__main__':
-    host = sys.argv[1]
+    host = sys.argv[1] if len(sys.argv) > 1 else "127.0.0.1"
     port = None
     if len(host.split(":")) > 1: host, port = host.split(":")
 
