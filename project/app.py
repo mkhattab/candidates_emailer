@@ -1,7 +1,7 @@
 import sys
 
 from flask import Flask
-from flask import render_template
+from flask import render_template, session
 from flaskext.odesk import odesk
 
 try:
@@ -19,12 +19,21 @@ def index():
    return render_template("index.html")
 
 
-@app.route("/authorize-test")
-def authorize():
+@app.route("/is-authorized")
+def is_authorized():
     if odesk.is_authorized():
         return "You are authorized!"
     else:
         return "Not authorized!"
+
+
+@odesk.after_login
+def save_session():
+    u = odesk.get_client().hr.get_user("me")
+    session["user"] = {
+        "name": "{0} {1}".format(u.get("first_name"), u.get("last_name")),
+        "url": u.get("public_url")
+        }
 
 
 if __name__ == '__main__':
