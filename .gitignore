@@ -1,4 +1,5 @@
 *.pyc
 *.pyo
 odesk_settings.py
+dev.db
 project/log/*.log
