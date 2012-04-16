@@ -19,7 +19,7 @@ app.register_module(odesk, url_prefix="/odesk")
 def init_db():
     import models
     models.db.create_all()
-
+init_db()
 
 @app.route("/")
 def index():
