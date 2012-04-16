@@ -52,6 +52,7 @@ def save_session():
 
     try:
         db.session.add(user)
+        db.session.commit()
     except IntegrityError:
         #Update access token
         db.session.rollback()
