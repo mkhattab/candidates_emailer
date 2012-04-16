@@ -24,12 +24,9 @@ def index():
    return render_template("index.html")
 
 
-@app.route("/is-authorized")
-def is_authorized():
-    if odesk.is_authorized():
-        return "You are authorized!"
-    else:
-        return "Not authorized!"
+@app.route("/options/")
+def options():
+    return render_template("options.html")
 
 
 @odesk.after_login
@@ -56,10 +53,12 @@ def save_session():
     except IntegrityError:
         #Update access token
         db.session.rollback()
-        user = User.query.get(user.email)
+        user = User.query.filter_by(email=user.email).first()
         user.access_token = access_token[0]
         user.access_token_secret = access_token[1]
         db.session.commit()
+
+    
 
         
 if __name__ == '__main__':
