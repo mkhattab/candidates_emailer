@@ -27,6 +27,6 @@ def deploy():
 
 
 def update_odesk_settings():
-    with lcd(LOCAL_PROJECT_DIR):
+    with lcd(os.path.join(LOCAL_PROJECT_DIR, "candidates_emailer")):
         put("odesk_settings.py", os.path.join(REMOTE_PROJECT_DIR, "project"))
         restart_uwsgi()
