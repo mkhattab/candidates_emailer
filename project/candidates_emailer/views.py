@@ -1,25 +1,18 @@
-import sys
-
 from sqlalchemy.exc import IntegrityError
-from flask import Flask
 from flask import render_template,\
      session, request, redirect, url_for
 from flaskext.odesk import odesk
+
+from candidates_emailer import app
 
 try:
     import odesk_settings
 except ImportError:
     raise ImportError("Please create an odesk_settings.py file with secret keys")
 
-app = Flask(__name__)
-app.config.from_pyfile("settings.py")
 app.register_module(odesk, url_prefix="/odesk")
 
 
-def init_db():
-    import models
-    models.db.create_all()
-init_db()
 
 @app.route("/")
 def index():
@@ -32,8 +25,8 @@ def index():
 @app.route("/options/", methods=("GET", "POST"))
 @odesk.login_required
 def options():
-    from forms import OptionsForm
-    from models import User, db
+    from candidates_emailer.forms import OptionsForm
+    from candidates_emailer.models import User, db
 
     
     user = User.query.get(session["user_id"])
@@ -56,7 +49,7 @@ def options():
 
 @odesk.after_login
 def save_session():
-    from models import User, db
+    from candidates_emailer.models import User, db
 
     access_token = odesk.get_access_token()
     u = odesk.get_client().hr.get_user("me")
@@ -82,19 +75,3 @@ def save_session():
         "name": "{0}".format(user.full_name),
         "url": u.get("public_url")
         }
-
-    
-    
-
-        
-if __name__ == '__main__':
-    host = sys.argv[1] if len(sys.argv) > 1 else "127.0.0.1"
-    port = None
-    if len(host.split(":")) > 1: host, port = host.split(":")
-
-    if "debug" in sys.argv: debug = True
-    else: debug = False
-
-    init_db()
-    
-    app.run(host=host, port=int(port,10) if port else 5000, debug=debug)

@@ -7,4 +7,4 @@ def _project_path(*dirs):
 
 SQLALCHEMY_DATABASE_URI = "sqlite:///{0}".format(_project_path("dev.db"))
 
-from odesk_settings import *
+from candidates_emailer.odesk_settings import *
