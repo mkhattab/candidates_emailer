@@ -1,7 +1,9 @@
 import sys
 
+from sqlalchemy.exc import IntegrityError
 from flask import Flask
-from flask import render_template, session
+from flask import render_template,\
+     session, request, redirect, url_for
 from flaskext.odesk import odesk
 
 try:
@@ -21,18 +23,40 @@ def init_db():
 
 @app.route("/")
 def index():
-   return render_template("index.html")
+    if odesk.is_authorized():
+        return redirect(url_for("options"))
+    else:
+        return render_template("index.html")
 
 
-@app.route("/options/")
+@app.route("/options/", methods=("GET", "POST"))
+@odesk.login_required
 def options():
-    return render_template("options.html")
+    from forms import OptionsForm
+    from models import User, db
+
+    
+    user = User.query.get(session["user_id"])
+    form = OptionsForm()
+    if request.method == "POST" \
+           and form.validate():
+        user.alternate_email = form.email.data
+        user.send_email = form.send_email.data
+        user.use_alternate_email = True if user.email != user.alternate_email else False
+        db.session.commit()
+
+    if request.method == "GET":
+        form = OptionsForm(email=user.alternate_email \
+                           if user.use_alternate_email else user.email,
+                           send_email=user.send_email)
+
+    
+    return render_template("options.html", form=form)
 
 
 @odesk.after_login
 def save_session():
     from models import User, db
-    from sqlalchemy.exc import IntegrityError
 
     access_token = odesk.get_access_token()
     u = odesk.get_client().hr.get_user("me")
@@ -41,11 +65,6 @@ def save_session():
                 last_name=u.get("last_name"),
                 access_token=access_token[0],
                 access_token_secret=access_token[1])
-
-    session["user"] = {
-        "name": "{0}".format(user.full_name),
-        "url": u.get("public_url")
-        }
 
     try:
         db.session.add(user)
@@ -58,6 +77,13 @@ def save_session():
         user.access_token_secret = access_token[1]
         db.session.commit()
 
+    session["user_id"] = user.id
+    session["user"] = {
+        "name": "{0}".format(user.full_name),
+        "url": u.get("public_url")
+        }
+
+    
     
 
         

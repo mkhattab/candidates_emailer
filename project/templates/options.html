@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block body %}
+<section>
+  <h1>Options</h1>
+  <form method="POST" id="options_form" action="/options/">
+    {{ form.csrf_token }}
+    {% if form.errors %}
+    <ul class="errors">
+      {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+         {% for error in field_errors %}
+         <li>{{ form[field_name].label }} {{ error }} </li>
+         {% endfor %}
+      {% endfor %}
+    </ul>
+    {% endif %}
+    {{ form.email.label }} {{ form.email(placeholder="Your email address") }}
+    <br />
+    {{ form.send_email.label }} {{ form.send_email(checked="checked") }}
+    <br />
+    <input type="submit" name="submit" value="Update!" />
+  </form>
+</section>
+{% endblock %}
