@@ -1,0 +1,19 @@
+body {
+    font-family: "Georgia", serif;
+    font-size: 17px;
+}
+.main { 
+    width: 940px;
+    margin: 30px auto 0 auto;
+}
+section h1 { font-family: "EBGaramondSC", "Georgia", serif; }
+.main header h1 { font-size: 1.75em; }
+.main > header h1 { font-size: 2.5em; }
+nav ul li {
+    display: inline;
+    padding-right: 20px;
+}
+a { 
+    text-decoration: none;
+    border-bottom: 1px dotted;
+}

@@ -10,22 +10,23 @@
 	<title>Candidates Emailer</title>
 	<meta name="description" content="oDesk Candidates Emailer">
 	<meta name="author" content="Mustafa Khattab">
-
-	<style type="text/css" media="screen">
-	  
-	</style>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/fonts.css') }}" type="text/css" media="screen" />
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" type="text/css" media="screen" />
 </head>
 <body>
 <!--[if lt IE 7]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
+<section class="main">
 <header>
-  <h1>oDesk Candidates Emailer</h1>
+  <h1><img src="{{ url_for('static', filename='img/odesk_logo.png') }}" class="" alt="oDesk" /><br />Candidates Emailer</h1>
   <nav>
     <ul>
       {% if odesk_is_authorized %}
       <li>Welcome <a href="{{ session.user.url }}" target="_blank">{{ session.user.name }}</a></li>
+      <li>&bull;</li>
       <li><a href="{{ url_for('odesk.logout') }}">Log out</a></li>
       {% else %}
       <li>Welcome</li>
+      <li>&bull;</li>
       <li><a href="{{ url_for('odesk.login', next='/options/') }}">Log in via oDesk</a></li>
       {% endif %}
     </ul>
@@ -35,6 +36,7 @@
 {% endblock %}
 <footer>
 </footer>
+</section>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"></script>
 </body>
 </html>

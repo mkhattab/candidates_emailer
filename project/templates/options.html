@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block body %}
 <section>
-  <h1>Options</h1>
+  <header><h1>Options</h1></header>
   <form method="POST" id="options_form" action="/options/">
     {{ form.csrf_token }}
     {% if form.errors %}
