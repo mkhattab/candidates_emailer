@@ -1,6 +1,7 @@
 uwsgi
 flask
 flask-sqlalchemy
+flask-wtf
 
 -e git+git://github.com/odesk/python-odesk.git#egg=python-odesk
 -e git+git://github.com/odesk/flask-odesk.git#egg=flask-odesk
