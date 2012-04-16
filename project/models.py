@@ -19,7 +19,7 @@ class User(db.Model):
         self.first_name = first_name
         self.last_name = last_name
         self.access_token = access_token
-        self.access_token_secret = self.access_token_secret
+        self.access_token_secret = access_token_secret
 
     def __repr__(self):
         return "<User {0}>".format(self.email)
