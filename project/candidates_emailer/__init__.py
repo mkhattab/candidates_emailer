@@ -1,7 +1,9 @@
 from flask import Flask
 
+from candidates_emailer import settings
+
 app = Flask(__name__)
-app.config.from_pyfile("settings.py")
+app.config.from_object(settings)
 
 from candidates_emailer import views
 from candidates_emailer import models
