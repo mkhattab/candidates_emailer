@@ -1,8 +1,8 @@
 uwsgi
-flask
-flask-sqlalchemy
-flask-wtf
-flask-odesk
-
+Flask
+Flask-SQLAlchemy
+Flask-WTF
+Flask-oDesk
+Flask-Testing
 -e git+git://github.com/odesk/python-odesk.git#egg=python-odesk
 
