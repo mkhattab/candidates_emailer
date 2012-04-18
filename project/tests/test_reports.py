@@ -1,4 +1,43 @@
-from candidates_emailer import reports
+from unittest import TestCase
+from mock import Mock, patch, MagicMock
 
+from candidates_emailer.reports import *
 
+from test_api import TEST_JOBS, TEST_TEAMS, TEST_OFFERS, TEST_COMPANIES
 
+class ReportsTest(TestCase):
+    def setUp(self):
+        self.orig_client = odesk.Client
+        self.user = User(email="acooper@example.com",
+                         first_name="Alice",
+                         last_name="Cooper",
+                         access_token="__access_token__",
+                         access_token_secret="__access_token_secret__")
+        client = Mock()
+        client.hr.get_companies.return_value = TEST_COMPANIES
+        client.hr.get_jobs.return_value = TEST_JOBS
+        client.hr.get_teams.return_value = TEST_TEAMS
+        client.hr.get_offers.return_value = TEST_OFFERS
+
+        self.job_poster = JobPoster(self.user, client)
+        
+    def tearDown(self):
+        odesk.Client = self.orig_client
+        
+    def test_get_client(self):
+        with patch("odesk.Client") as mock_client:
+            _client = get_client(key="12345_public",
+                                secret="12345_secret",
+                                user=self.user)
+        assert _client.oauth_access_token == self.user.access_token
+        assert _client.oauth_access_token_secret == self.user.access_token_secret
+
+    def test_generate_offers_report(self):
+        company = self.job_poster.companies[0]
+        job = self.job_poster.jobs(company)[0]
+        filename, output = generate_offers_report(self.job_poster, job)
+        expected_result = '''provider__id,provider__name,provider__profile_url,provider_team__reference,hourly_charge_rate,hourly_pay_rate,interview_status,candidacy_status,modified_time\r\nbbobberson,Bob Bobberson,https://www.odesk.com/users/~~ciphertext,,55.56,50,waiting_for_provider,rejected,1334712930000\r\n'''
+
+        assert output.getvalue() == expected_result
+        assert filename[-3:] == "csv"
+    
