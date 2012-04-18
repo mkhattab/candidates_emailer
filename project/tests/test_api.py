@@ -24,3 +24,50 @@ class BaseAPIObjectTest(TestCase):
 
     def test_get_num_float_field(self):
         assert isinstance(self.object.num_value_hours, float) == True
+
+
+class BaseListTest(TestCase):
+    def setUp(self):
+        json_data_dict_many = {
+            "lister": {
+                "paging": {
+                    "count": "20",
+                    "offset": "0"
+                    },
+                "query": "",
+                "sort": "",
+                "total_items": "20"
+            }, "objects": [
+                {"value": "test"}
+                ]}
+        self.many_objects_dict = api.BaseList(None, _json_cache={})
+        
+        json_data_dict_one = {
+            "lister": {
+                "paging": {
+                    "count": "20",
+                    "offset": "0"
+                    },
+                "query": "",
+                "sort": "",
+                "total_items": "20"
+            }, "objects": {
+                "value": "test"
+                }}
+        self.one_object_dict = api.BaseList(
+            None,
+            _json_cache=json_data_dict_one)
+        
+        json_data_list[{"value": "test"}]
+        self.objects_list = api.BaseList(None, _json_cache=json_data_list)
+        
+    def test_objects_list(self):
+        for item in self.many_objects_dict:
+            assert item["value"] == "test"
+
+        for item in self.one_object_dict:
+            assert item["value"] == "test"
+
+        for item in self.objects_list:
+            assert item["value"] == "test"
+    

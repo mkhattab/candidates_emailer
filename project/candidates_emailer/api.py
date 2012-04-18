@@ -22,8 +22,7 @@ class AccessTokensRequiredError(Exception):
 
 
 class BaseAPIObject(object):
-    def __init__(self, client=None, _json_cache={}):
-        self.client = client
+    def __init__(self, _json_cache={}):
         self._json_cache = _json_cache
 
     def __getattr__(self, name):
@@ -60,18 +59,29 @@ class BaseAPIObject(object):
 
 
 class Company(BaseAPIObject):
-    def __init__(self, client=None, _json_cache={}):
+    def __init__(self, _json_cache={}):
         super(BaseAPIObject, self).__init__(client, _json_cache)
 
 
 class Job(BaseAPIObject):
-    def __init__(self, client=None, _json_cache={}):
+    def __init__(self, _json_cache={}):
         super(BaseAPIObject, self).__init__(client, _json_cache)
 
 
 class Team(BaseAPIObject):
-    def __init__(self, client=None, _json_cache={}):
+    def __init__(self, _json_cache={}):
         super(BaseAPIObject, self).__init__(client, _json_cache)
+
+
+class BaseList(object):
+    def __init__(self, client, _json_cache={}):
+        pass
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        raise StopIteration
 
 
 class TeamList(object):
