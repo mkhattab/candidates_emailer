@@ -139,6 +139,17 @@ class BaseList(object):
         self._index += 1
         return self.object_cls(_json_cache=_json)
 
+    def __getitem__(self, key):
+        if not isinstance(key, int):
+            raise IndexError("list indices must be integers, not str")
+
+        if key > len(self):
+            raise IndexError("list index out of range")
+        try:
+            return self.object_cls(_json_cache=self.objects[key])
+        except IndexError:
+            raise NotImplementedError("Paging has not been implemented yet")
+
 
 class TeamList(BaseList):
     def __init__(self, client, _json_cache=None):
@@ -166,6 +177,7 @@ class OfferList(BaseList):
         super(OfferList, self).__init__(client,
                                        Offer,
                                        _json_cache=_json_cache)
+
 
 class JobPoster(object):
     def __init__(self, user, client):    

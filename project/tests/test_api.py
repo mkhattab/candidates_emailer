@@ -188,6 +188,16 @@ class BaseListTest(TestCase):
 
         for item in self.objects_list:
             assert item.value == "test"
+
+    def test_objects_index(self):
+        item = self.many_objects_dict[0]
+        assert item.value == "test"
+
+        item = self.one_object_dict[0]
+        assert item.value == "test"
+
+        item = self.objects_list[0]
+        assert item.value == "test"
     
 
 class CompanyListTest(TestCase):
@@ -203,6 +213,10 @@ class CompanyListTest(TestCase):
     def test_company_count(self):
         assert len(self.companies) == 1
 
+    def test_company_index(self):
+        company = self.companies[0]
+        assert company.name == "Alice Cooper"
+
 
 class JobListTest(TestCase):
     def setUp(self):        
@@ -214,6 +228,10 @@ class JobListTest(TestCase):
 
     def test_job_count(self):
         assert len(self.jobs) == 1
+
+    def test_job_index(self):
+        job = self.jobs[0]
+        assert job.title == "Test Job"
 
 
 class TeamListTest(TestCase):
@@ -229,6 +247,10 @@ class TeamListTest(TestCase):
     def test_team_count(self):
         assert len(self.teams) == 1
 
+    def test_team_index(self):
+        team = self.teams[0]
+        assert team.name == "Alice Cooper"
+
 
 class OfferListTest(TestCase):
     def setUp(self):
@@ -241,6 +263,10 @@ class OfferListTest(TestCase):
 
     def test_offer_count(self):
         assert len(self.offers) == 1
+
+    def test_offers_index(self):
+        offer = self.offers[0]
+        assert offer.provider__name == "Bob Bobberson"
 
 
 class JobPosterTest(TestCase):
