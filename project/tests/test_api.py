@@ -59,6 +59,57 @@ TEST_TEAMS = [{u'company__reference': u'123456',
                u'status': u'active'}]
         
 
+TEST_OFFERS = {u'lister': {u'paging': {u'count': u'20', u'offset': u'0'},
+                           u'query': u'',
+                           u'sort': u'',
+                           u'total_items': u'1'},
+               u'offer': {u'buyer_company__name': u'Alice Cooper',
+                          u'buyer_company__reference': u'123456',
+                          u'buyer_team__id': u'6yiq_pfanlnwclja9-smag',
+                          u'buyer_team__name': u'Alice Cooper',
+                          u'buyer_team__reference': u'123456',
+                          u'candidacy_status': u'rejected',
+                          u'created_by': u'acooper',
+                          u'created_by_name': u'Alice Cooper',
+                          u'created_time': u'1334669594000',
+                          u'created_type': u'buyer',
+                          u'engagement__reference': u'',
+                          u'engagement_end_date': u'1334620800000',
+                          u'engagement_job_type': u'hourly',
+                          u'engagement_start_date': u'1334620800000',
+                          u'engagement_title': u'',
+                          u'estimated_duration': u'Ongoing / More than 6 months',
+                          u'estimated_duration_id': u'1',
+                          u'has_buyer_signed': u'',
+                          u'has_provider_signed': u'',
+                          u'hourly_charge_rate': u'55.56',
+                          u'hourly_pay_rate': u'50',
+                          u'interview_status': u'waiting_for_provider',
+                          u'is_hidden': u'1',
+                          u'is_matching_preferences': u'1',
+                          u'is_shortlisted': u'',
+                          u'is_undecided': u'0',
+                          u'is_viewed': u'',
+                          u'job__reference': u'1234567',
+                          u'job__title': u'Test Job',
+                          u'key': u'~~abb3808faeb2a533',
+                          u'modified_time': u'1334712930000',
+                          u'my_role': u'both',
+                          u'provider__has_agency': u'',
+                          u'provider__id': u'bbobberson',
+                          u'provider__name': u'Bob Bobberson',
+                          u'provider__profile_url': u'https://www.odesk.com/users/~~ciphertext',
+                          u'provider__reference': u'7654321',
+                          u'provider_team__reference': u'',
+                          u'reference': u'1234567',
+                          u'rent_percent': u'10',
+                          u'roles': {u'role': [u'provider', u'buyer']},
+                          u'status': u'',
+                          u'weekly_hours_limit': u'',
+                          u'weekly_salary_charge_amount': u'',
+                          u'weekly_salary_pay_amount': u'',
+                          u'weekly_stipend_hours': u''}}
+
 class BaseAPIObjectTest(TestCase):
     def setUp(self):
         self.object = api.BaseAPIObject({"num_int_value": "1",
@@ -179,12 +230,26 @@ class TeamListTest(TestCase):
         assert len(self.teams) == 1
 
 
+class OfferListTest(TestCase):
+    def setUp(self):
+        self.offers = api.OfferList(Mock(), _json_cache=TEST_OFFERS)
+
+    def test_offer_list(self):
+        for offer in self.offers:
+            assert offer.provider__name == "Bob Bobberson"
+            assert offer.provider__id == "bbobberson"
+
+    def test_offer_count(self):
+        assert len(self.offers) == 1
+
+
 class JobPosterTest(TestCase):
     def setUp(self):
         client = Mock()
         client.hr.get_companies.return_value = TEST_COMPANIES
         client.hr.get_jobs.return_value = TEST_JOBS
         client.hr.get_teams.return_value = TEST_TEAMS
+        client.hr.get_offers.return_value = TEST_OFFERS
         user = Mock()
 
         self.job_poster = api.JobPoster(user, client)
@@ -201,3 +266,9 @@ class JobPosterTest(TestCase):
     def test_get_teams(self):
         for team in self.job_poster.teams:
             assert team.name == "Alice Cooper"
+
+    def test_get_offers(self):
+        for company in self.job_poster.companies:
+            for job in self.job_poster.jobs(company):
+                for offer in self.job_poster.offers(job):
+                    assert offer.provider__name == "Bob Bobberson"

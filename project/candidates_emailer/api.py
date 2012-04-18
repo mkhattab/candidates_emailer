@@ -70,22 +70,29 @@ class BaseAPIObject(object):
 class Company(BaseAPIObject):
     type = "company"
     
-    def __init__(self, _json_cache={}):
+    def __init__(self, _json_cache=None):
         super(Company, self).__init__(_json_cache)
 
 
 class Job(BaseAPIObject):
     type = "job"
     
-    def __init__(self, _json_cache={}):
+    def __init__(self, _json_cache=None):
         super(Job, self).__init__(_json_cache)
 
 
 class Team(BaseAPIObject):
     type = "team"
     
-    def __init__(self, _json_cache={}):
+    def __init__(self, _json_cache=None):
         super(Team, self).__init__(_json_cache)
+
+
+class Offer(BaseAPIObject):
+    type = "offer"
+
+    def __init__(self, _json_cache=None):
+        super(Offer, self).__init__(_json_cache)
 
 
 class BaseList(object):
@@ -132,25 +139,31 @@ class BaseList(object):
 
 
 class TeamList(BaseList):
-    def __init__(self, client, _json_cache={}):
+    def __init__(self, client, _json_cache=None):
         super(TeamList, self).__init__(client,
                                        Team,
                                        _json_cache=_json_cache)
         
     
 class CompanyList(BaseList):
-    def __init__(self, client, _json_cache={}):
+    def __init__(self, client, _json_cache=None):
         super(CompanyList, self).__init__(client,
                                           Company,
                                           _json_cache=_json_cache)
 
 
 class JobList(BaseList):
-    def __init__(self, client, _json_cache={}):
+    def __init__(self, client, _json_cache=None):
         super(JobList, self).__init__(client,
                                        Job,
                                        _json_cache=_json_cache)
 
+
+class OfferList(BaseList):
+    def __init__(self, client, _json_cache=None):
+        super(OfferList, self).__init__(client,
+                                       Offer,
+                                       _json_cache=_json_cache)
 
 class JobPoster(object):
     def __init__(self, user, client):    
@@ -159,6 +172,7 @@ class JobPoster(object):
         self._companies = None
         self._teams = None
         self._jobs = {}
+        self._offers = {}
 
     @property
     def companies(self):
@@ -182,14 +196,25 @@ class JobPoster(object):
 
     def jobs(self, company):
         try:
-            return self._jobs[company]
+            return self._jobs[company.reference]
         except KeyError:
             data = self._get_jobs(buyer_team_reference=company.reference)
             jobs = JobList(self.client,
                            _json_cache=data)
             self._jobs[company.reference] = jobs
             return jobs
-    
+
+    def offers(self, job):
+        try:
+            return self._offers[job.reference]
+        except KeyError:
+            data = self._get_offers(
+                buyer_team_reference=job.buyer_team__reference,
+                job_ref=job.reference)
+            offers = OfferList(self.client, _json_cache=data)
+            self._offers[job.reference] = offers
+            return offers
+        
     def _get_companies(self):
         return self.client.hr.get_companies()
 
@@ -198,3 +223,6 @@ class JobPoster(object):
 
     def _get_teams(self):
         return self.client.hr.get_teams()
+
+    def _get_offers(self, **kwargs):
+        return self.client.hr.get_offers(**kwargs)
