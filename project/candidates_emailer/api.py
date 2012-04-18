@@ -22,10 +22,11 @@ class AccessTokensRequiredError(Exception):
 
 
 class BaseAPIObject(object):
-    def __init__(self, _json_cache={}):
+    def __init__(self, _json_cache=None):
         self._json_cache = _json_cache
 
     def __getattr__(self, name):
+        if not self._json_cache: raise AttributeError("That field does not exist")
         try:
             return self._try_convert_field(name, self._json_cache[name])
         except KeyError:
@@ -59,45 +60,80 @@ class BaseAPIObject(object):
 
 
 class Company(BaseAPIObject):
+    type = "company"
+    
     def __init__(self, _json_cache={}):
-        super(BaseAPIObject, self).__init__(client, _json_cache)
+        super(Company, self).__init__(_json_cache)
 
 
 class Job(BaseAPIObject):
+    type = "job"
+    
     def __init__(self, _json_cache={}):
-        super(BaseAPIObject, self).__init__(client, _json_cache)
+        super(Job, self).__init__(_json_cache)
 
 
 class Team(BaseAPIObject):
+    type = "team"
+    
     def __init__(self, _json_cache={}):
-        super(BaseAPIObject, self).__init__(client, _json_cache)
+        super(Team, self).__init__(_json_cache)
 
 
 class BaseList(object):
-    def __init__(self, client, _json_cache={}):
-        pass
+    def __init__(self, client, object_cls, _json_cache={}):
+        self.client = client
+        self._json_cache = _json_cache
+        self.object_cls = object_cls
+        if isinstance(_json_cache, dict):
+            self.lister = _json_cache["lister"]
+            self.objects = _json_cache[self.object_cls.type]
+        elif isinstance(_json_cache, list):
+            self.lister = None
+            self.objects = _json_cache
 
+    def __len__(self):
+        if self.lister:
+            return int(self.lister["total_items"], 10)
+        else:
+            return len(self.objects)
+    
     def __iter__(self):
+        self._index = 0
+        self._page = 0
         return self
 
-    def __next__(self):
-        raise StopIteration
+    def next(self):
+        if self._index > len(self):            
+            raise StopIteration
+        _json = self.objects[self._index]
+        self._index += 1
+        return self.object_cls(_json_cache=_json)
 
 
 class TeamList(object):
-    pass
-
-
+    def __init__(self, client, _json_cache={}):
+        super(TeamList, self).__init__(client,
+                                       Team,
+                                       _json_cache=_json_cache)
+        
+    
 class CompanyList(object):
-    pass
+    def __init__(self, client, _json_cache={}):
+        super(CompanyList, self).__init__(client,
+                                       Company,
+                                       _json_cache=_json_cache)
 
 
 class JobList(object):
-    pass
+    def __init__(self, client, _json_cache={}):
+        super(JobList, self).__init__(client,
+                                       Job,
+                                       _json_cache=_json_cache)
+
 
 
 class JobPoster(object):
-
     def __init__(self, user, client):    
         self.user = user
         self.client = client
