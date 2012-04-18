@@ -3,9 +3,11 @@ import re
 __all__ = ["Job",
            "Team",
            "Company",
+           "Offer",
            "JobList",
            "TeamList",
            "CompanyList",
+           "OfferList",
            "JobPoster"]
 
 INT_VALUE_FIELD_REGEX = (
