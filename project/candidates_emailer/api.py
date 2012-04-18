@@ -81,10 +81,15 @@ class Team(BaseAPIObject):
 
 
 class BaseList(object):
-    def __init__(self, client, object_cls, _json_cache={}):
+    def __init__(self, client, object_cls, _json_cache=None):
         self.client = client
         self._json_cache = _json_cache
         self.object_cls = object_cls
+        self.lister = None
+
+        if not _json_cache:
+            self.objects = []
+        
         if isinstance(_json_cache, dict):
             self.lister = _json_cache["lister"]
             objects = _json_cache[self.object_cls.type]            
@@ -93,7 +98,6 @@ class BaseList(object):
             else:
                 self.objects = [objects]
         elif isinstance(_json_cache, list):
-            self.lister = None
             self.objects = _json_cache
 
     def __len__(self):
@@ -140,17 +144,49 @@ class JobList(BaseList):
                                        _json_cache=_json_cache)
 
 
-
 class JobPoster(object):
     def __init__(self, user, client):    
         self.user = user
         self.client = client
+        self._companies = None
+        self._teams = None
+        self._jobs = {}
 
+    @property
+    def companies(self):
+        if self._companies:
+            return self._companies
+        else:
+            data = self._get_companies()
+            self._companies = CompanyList(self.client,
+                                          _json_cache=data)
+            return self._companies
+
+    @property
+    def teams(self):
+        if self._teams:
+            return self._teams
+        else:
+            data  = self._get_teams()
+            self._teams = TeamList(self.client,
+                                   _json_cache=data)
+            return self._teams
+
+    def jobs(self, company):
+        try:
+            return self._jobs[company]
+        except KeyError:
+            data = self._get_jobs(buyer_team_reference=company.reference)
+            jobs = JobList(self.client,
+                           _json_cache=data)
+            self._jobs[company.reference] = jobs
+            return jobs
+    
     def _get_companies(self):
-        pass
+        return self.client.hr.get_companies()
 
-    def _get_jobs(self):
-        pass
+    def _get_jobs(self, **kwargs):
+        return self.client.hr.get_jobs(**kwargs)
 
     def _get_teams(self):
-        pass
+        return self.client.hr.get_teams()
