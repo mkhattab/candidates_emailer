@@ -87,7 +87,11 @@ class BaseList(object):
         self.object_cls = object_cls
         if isinstance(_json_cache, dict):
             self.lister = _json_cache["lister"]
-            self.objects = _json_cache[self.object_cls.type]
+            objects = _json_cache[self.object_cls.type]            
+            if isinstance(objects, list):
+                self.objects = objects
+            else:
+                self.objects = [objects]
         elif isinstance(_json_cache, list):
             self.lister = None
             self.objects = _json_cache
@@ -106,7 +110,11 @@ class BaseList(object):
     def next(self):
         if self._index > len(self):            
             raise StopIteration
-        _json = self.objects[self._index]
+        try:
+            _json = self.objects[self._index]
+        except IndexError:
+            raise StopIteration
+        
         self._index += 1
         return self.object_cls(_json_cache=_json)
 
