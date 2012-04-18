@@ -119,21 +119,21 @@ class BaseList(object):
         return self.object_cls(_json_cache=_json)
 
 
-class TeamList(object):
+class TeamList(BaseList):
     def __init__(self, client, _json_cache={}):
         super(TeamList, self).__init__(client,
                                        Team,
                                        _json_cache=_json_cache)
         
     
-class CompanyList(object):
+class CompanyList(BaseList):
     def __init__(self, client, _json_cache={}):
         super(CompanyList, self).__init__(client,
-                                       Company,
-                                       _json_cache=_json_cache)
+                                          Company,
+                                          _json_cache=_json_cache)
 
 
-class JobList(object):
+class JobList(BaseList):
     def __init__(self, client, _json_cache={}):
         super(JobList, self).__init__(client,
                                        Job,
