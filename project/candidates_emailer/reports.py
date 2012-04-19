@@ -62,22 +62,21 @@ def generate_reports(reports_dir):
             user.reports.append(report)
             db.session.commit()
 
-            if not last_report:
-                with report.report_file() as report_file:
-                    json_dump = json.dumps(csv_reports)
-                    report_file.write(json_dump)
-                    report.sha1 = report._sha1(json_dump)
+            json_dump = json.dumps(csv_reports)
+            report.sha1 = report._sha1(json_dump)
 
-                db.session.commit()
+            with report.report_file() as report_file:
+                    report_file.write(json_dump)
+                    
+            db.session.commit()
+            
+            if not last_report:
                 yield (user, csv_reports)
             else:
                 delta = report.timestamp - last_report.timestamp
-                report_sha1 = report._sha1()
                 #If time since last report is greater than 12 hours and not a duplicate, continue
                 if delta.seconds > 12 * 60 * 60 and \
-                       report_sha1 != last_report.sha1:
-                    report.sha1 = report_sha1
-                    db.session.commit()
+                       report.sha1 != last_report.sha1:
                     yield (user, csv_reports)
                 else:
                     report.delete_report_file()
