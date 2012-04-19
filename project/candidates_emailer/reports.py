@@ -49,34 +49,35 @@ def generate_offers_report(job_poster, job):
 
 def generate_reports(reports_dir):
     for user in User.query.all():
-        last_report = user.reports.order_by(db.desc(ReportLog.timestamp)).first()
-        csv_reports = []
-        job_poster = JobPoster(user, get_client(user=user))
+        if user.send_email:
+            last_report = user.reports.order_by(db.desc(ReportLog.timestamp)).first()
+            csv_reports = []
+            job_poster = JobPoster(user, get_client(user=user))
 
-        for company in job_poster.companies:
-            for job in job_poster.jobs(company):
-                csv_reports.append(generate_offers_report(job_poster, job))
+            for company in job_poster.companies:
+                for job in job_poster.jobs(company):
+                    csv_reports.append(generate_offers_report(job_poster, job))
 
-        report = ReportLog(reports_dir)
-        user.reports.append(report)
-        db.session.commit()
-        
-        if not last_report:
-            with report.report_file() as report_file:
-                report_file.write(json.dumps(csv_reports))
-                
+            report = ReportLog(reports_dir)
+            user.reports.append(report)
             db.session.commit()
-            yield csv_reports
-        else:
-            delta = report.timestamp - last_report.timestamp
-            report_sha1 = report._sha1()
-            #If time since last report is greater than 12 hours and not a duplicate, continue
-            if delta.seconds > 12 * 60 * 60 and \
-                   report_sha1 != last_report.sha1:
-                report.sha1 = report_sha1
+
+            if not last_report:
+                with report.report_file() as report_file:
+                    report_file.write(json.dumps(csv_reports))
+
                 db.session.commit()
                 yield csv_reports
             else:
-                report.delete_report_file()
-                db.session.delete(report)
-                db.session.commit()
+                delta = report.timestamp - last_report.timestamp
+                report_sha1 = report._sha1()
+                #If time since last report is greater than 12 hours and not a duplicate, continue
+                if delta.seconds > 12 * 60 * 60 and \
+                       report_sha1 != last_report.sha1:
+                    report.sha1 = report_sha1
+                    db.session.commit()
+                    yield csv_reports
+                else:
+                    report.delete_report_file()
+                    db.session.delete(report)
+                    db.session.commit()
