@@ -75,8 +75,8 @@ class ReportsTest(flaskext.testing.TestCase):
         mock_client.hr.get_teams.return_value = TEST_TEAMS
         mock_client.hr.get_offers.return_value = TEST_OFFERS        
         for report in generate_reports(self.tmp_reports_dir):
-            assert isinstance(report, list) == True
-            assert isinstance(report[0], tuple) == True
+            assert isinstance(report[1], list) == True
+            assert isinstance(report[1][0], tuple) == True
     
 
 class ReportLogTest(flaskext.testing.TestCase):    

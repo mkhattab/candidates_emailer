@@ -67,7 +67,7 @@ def generate_reports(reports_dir):
                     report_file.write(json.dumps(csv_reports))
 
                 db.session.commit()
-                yield csv_reports
+                yield (user, csv_reports)
             else:
                 delta = report.timestamp - last_report.timestamp
                 report_sha1 = report._sha1()
@@ -76,7 +76,7 @@ def generate_reports(reports_dir):
                        report_sha1 != last_report.sha1:
                     report.sha1 = report_sha1
                     db.session.commit()
-                    yield csv_reports
+                    yield (user, csv_reports)
                 else:
                     report.delete_report_file()
                     db.session.delete(report)
