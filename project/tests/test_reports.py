@@ -1,9 +1,13 @@
+import os
+import tempfile
 from unittest import TestCase
 from mock import Mock, patch, MagicMock
 
-from candidates_emailer.reports import *
+import flaskext.testing
 
+from candidates_emailer.reports import *
 from test_api import TEST_JOBS, TEST_TEAMS, TEST_OFFERS, TEST_COMPANIES
+
 
 class ReportsTest(TestCase):
     def setUp(self):
@@ -41,3 +45,47 @@ class ReportsTest(TestCase):
         assert output.getvalue() == expected_result
         assert filename[-3:] == "csv"
     
+
+class ReportLogTest(flaskext.testing.TestCase):    
+    def create_app(self):
+        from candidates_emailer import app
+        app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite://"
+        app.config["TESTING"] = True
+        return app
+    
+    def setUp(self):
+        from candidates_emailer.models import db
+        self.db = db
+        db.create_all()
+        self.tmp_reports_dir = tempfile.mkdtemp("reports")
+        self.user = User(email="acooper@example.com",
+                         first_name="Alice",
+                         last_name="Cooper")
+        self.report = ReportLog(self.tmp_reports_dir,
+                                user_id=self.user.id)
+        self.user.reports.append(self.report)
+        self.db.session.add(self.user)
+        self.db.session.add(self.report)
+        self.db.session.commit()
+
+    def tearDown(self):
+        for report in self.user.reports.all():
+            if report.filename:
+                os.remove(report.report_file_path)
+                os.rmdir(os.path.dirname(report.report_file_path))
+        os.rmdir(self.tmp_reports_dir)        
+        self.db.session.remove()
+        self.db.drop_all()
+
+    def test_new_report(self):
+        with self.report.report_file() as report_file:
+            self.report.filename = os.path.basename(report_file.name)
+            self.db.session.commit()
+            assert "{0}/{1}/{2}".format(self.report.reports_dir,
+                                        self.report.user_id,
+                                        self.report.filename) == report_file.name
+
+    def test_sha1(self):
+        self.test_new_report()
+        sha1 = self.report._sha1()
+        assert len(sha1) == 40

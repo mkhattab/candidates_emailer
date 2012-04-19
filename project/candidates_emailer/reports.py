@@ -5,7 +5,7 @@ from datetime import datetime
 
 import odesk
 
-from candidates_emailer.models import User
+from candidates_emailer.models import User, ReportLog
 from candidates_emailer.odesk_settings import ODESK_KEY, ODESK_SECRET
 from candidates_emailer.api import *
 
@@ -48,5 +48,5 @@ def generate_offers_report(job_poster, job):
     return (filename, output)
 
 
-def generate_reports():
+def generate_reports(template="email.html"):
     pass
