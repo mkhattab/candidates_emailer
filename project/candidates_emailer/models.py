@@ -94,3 +94,11 @@ class ReportLog(db.Model):
     def report_file_path(self):
         if self.filename:
             return os.path.join(self.reports_dir, str(self.user_id), self.filename)
+
+    def delete_report_file(self):
+        if self.filename:
+            try:
+                os.remove(self.report_file_path)
+            except os.error as e:
+                if e.errno != 2:
+                    raise e
