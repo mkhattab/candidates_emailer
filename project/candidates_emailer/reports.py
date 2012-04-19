@@ -64,7 +64,9 @@ def generate_reports(reports_dir):
 
             if not last_report:
                 with report.report_file() as report_file:
-                    report_file.write(json.dumps(csv_reports))
+                    json_dump = json.dumps(csv_reports)
+                    report_file.write(json_dump)
+                    report.sha1 = report._sha1(json_dump)
 
                 db.session.commit()
                 yield (user, csv_reports)

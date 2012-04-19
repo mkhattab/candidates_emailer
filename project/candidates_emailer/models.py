@@ -66,10 +66,13 @@ class ReportLog(db.Model):
     def __repr__(self):
         return "<ReportLog ID:{0} File:'{1}'>".format(self.id, self.filename)
     
-    def _sha1(self):
-        filename = self.report_file_path
-        with open(filename, "rb") as f:
-            return hashlib.sha1(f.read()).hexdigest()
+    def _sha1(self, data=None):
+        if not data:
+            filename = self.report_file_path
+            with open(filename, "rb") as f:
+                return hashlib.sha1(f.read()).hexdigest()
+        else:
+            return hashlib.sha1(data).hexdigest()
 
     def report_file(self):
         if self.filename:
