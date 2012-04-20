@@ -33,7 +33,7 @@ def options():
     if not user:
         odesk.logout()
         return redirect(url_for("index"))
-    
+
     form = OptionsForm()
     if request.method == "POST" \
            and form.validate():
