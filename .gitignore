@@ -4,3 +4,4 @@ local_settings.py
 odesk_settings.py
 dev.db
 project/log/*.log
+project/reports/

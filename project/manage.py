@@ -18,7 +18,7 @@ class SendReports(Command):
     
     def run(self, testing):
         mail = Mail(app)
-        for user, csv_report in generate_reports(app.config["REPORTS_DIR"]):
+        for user, csv_reports in generate_reports(app.config["REPORTS_DIR"]):
             context = {"user": user}
             template = Template(app.config["EMAIL_TEXT_TEMPLATE"])
             msg = Message(app.config["EMAIL_SUBJECT_LINE"],
@@ -26,6 +26,9 @@ class SendReports(Command):
                           sender=app.config["DEFAULT_MAIL_SENDER"])
             msg.body = template.render(context)
 
+            for csv_filename, csv_data in csv_reports:
+                msg.attach(csv_filename, "text/csv", csv_data)
+                
             if not testing:
                 mail.send(msg)
             else:
