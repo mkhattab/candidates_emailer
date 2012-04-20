@@ -30,6 +30,10 @@ def options():
 
     
     user = User.query.get(session["user_id"])
+    if not user:
+        odesk.logout()
+        return redirect(url_for("index"))
+    
     form = OptionsForm()
     if request.method == "POST" \
            and form.validate():

@@ -13,3 +13,7 @@ class SiteTest(TestCase):
     def test_index_ok(self):
         response = self.client.get("/")
         self.assertEquals(response.status_code, 200)
+
+    def test_user_does_not_exist(self):
+        #TODO
+        pass
