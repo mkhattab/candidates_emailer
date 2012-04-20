@@ -34,6 +34,17 @@ class SendReports(Command):
             else:
                 print msg.get_response().to_message().as_string()
 
+
+@manager.option("-r", "--recipient", help="The recipient to send to")
+def send_test_email(recipient):
+    mail = Mail(app)
+    msg = Message("Test Message -- Candidates Emailer app",
+                  [recipient],
+                  sender="mkhattab@odesk.com")
+    msg.body = "This is a test message from the Candidates Emailer App"
+    mail.send(msg)
+
+
 manager.add_command("send_reports", SendReports())
 
 if __name__ == '__main__':
