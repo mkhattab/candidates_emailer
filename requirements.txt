@@ -1,8 +1,12 @@
-uwsgi
-Flask
-Flask-SQLAlchemy
-Flask-WTF
-Flask-oDesk
-Flask-Testing
--e git+git://github.com/odesk/python-odesk.git#egg=python-odesk
+Flask==0.8
+Flask-Mail==0.6.1
+Flask-SQLAlchemy==0.16
+Flask-Script==0.3.3
+Flask-Testing==0.3
+Flask-WTF==0.6
+Flask-oDesk==0.4.1.1
+mock==0.8.0
+nose==1.1.2
+uWSGI==1.1.2
 
+-e git+git://github.com/odesk/python-odesk.git#egg=python-odesk
