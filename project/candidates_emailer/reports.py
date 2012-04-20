@@ -56,29 +56,31 @@ def generate_reports(reports_dir):
 
             for company in job_poster.companies:
                 for job in job_poster.jobs(company):
-                    csv_reports.append(generate_offers_report(job_poster, job))
+                    if job.status == "open":
+                        csv_reports.append(generate_offers_report(job_poster, job))
 
-            report = ReportLog(reports_dir)
-            user.reports.append(report)
-            db.session.commit()
+            if csv_reports:
+                report = ReportLog(reports_dir)
+                user.reports.append(report)
+                db.session.commit()
 
-            json_dump = json.dumps(csv_reports)
-            report.sha1 = report._sha1(json_dump)
+                json_dump = json.dumps(csv_reports)
+                report.sha1 = report._sha1(json_dump)
 
-            with report.report_file() as report_file:
+                with report.report_file() as report_file:
                     report_file.write(json_dump)
-                    
-            db.session.commit()
-            
-            if not last_report:
-                yield (user, csv_reports)
-            else:
-                delta = report.timestamp - last_report.timestamp
-                #If time since last report is greater than 12 hours and not a duplicate, continue
-                if delta.seconds > 12 * 60 * 60 and \
-                       report.sha1 != last_report.sha1:
+
+                db.session.commit()
+
+                if not last_report:
                     yield (user, csv_reports)
                 else:
-                    report.delete_report_file()
-                    db.session.delete(report)
-                    db.session.commit()
+                    delta = report.timestamp - last_report.timestamp
+                    #If time since last report is greater than 12 hours and not a duplicate, continue
+                    if delta.seconds > 12 * 60 * 60 and \
+                           report.sha1 != last_report.sha1:
+                        yield (user, csv_reports)
+                    else:
+                        report.delete_report_file()
+                        db.session.delete(report)
+                        db.session.commit()
