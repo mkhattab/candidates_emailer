@@ -165,19 +165,19 @@ class BaseAPIObjectTest(TestCase):
                                          "string_value": "some value"})
 
     def test_get_string_field(self):
-        assert self.object.string_value == "some value"
+        self.assertEquals(self.object.string_value, "some value")
 
     def test_get_boolean_field_true(self):
-        assert self.object.is_truth_value == True
+        self.assertTrue(self.object.is_truth_value)
 
     def test_get_boolean_field_false(self):
-        assert self.object.is_false_value == False
+        self.assertFalse(self.object.is_false_value)
 
     def test_get_num_int_field(self):
-        assert isinstance(self.object.num_int_value, int) == True
+        self.assertIsInstance(self.object.num_int_value, int)
 
     def test_get_num_float_field(self):
-        assert isinstance(self.object.num_value_hours, float) == True
+        self.assertIsInstance(self.object.num_value_hours, float)
 
 
 class DummyObject(api.BaseAPIObject):
@@ -227,23 +227,23 @@ class BaseListTest(TestCase):
         
     def test_objects_list(self):
         for item in self.many_objects_dict:
-            assert item.value == "test"
+            self.assertEquals(item.value, "test")
 
         for item in self.one_object_dict:
-            assert item.value == "test"
+            self.assertEquals(item.value, "test")
 
         for item in self.objects_list:
-            assert item.value == "test"
+            self.assertEquals(item.value, "test")
 
     def test_objects_index(self):
         item = self.many_objects_dict[0]
-        assert item.value == "test"
+        self.assertEquals(item.value, "test")
 
         item = self.one_object_dict[0]
-        assert item.value == "test"
+        self.assertEquals(item.value, "test")
 
         item = self.objects_list[0]
-        assert item.value == "test"
+        self.assertEquals(item.value, "test")
     
 
 class CompanyListTest(TestCase):
@@ -253,15 +253,15 @@ class CompanyListTest(TestCase):
 
     def test_get_company_list(self):
         for company in self.companies:
-            assert company.name == "Alice Cooper"
-            assert company.reference == "123456"
+            self.assertEquals(company.name, "Alice Cooper")
+            self.assertEquals(company.reference, "123456")
 
     def test_company_count(self):
-        assert len(self.companies) == 1
+        self.assertEquals(len(self.companies), 1)
 
     def test_company_index(self):
         company = self.companies[0]
-        assert company.name == "Alice Cooper"
+        self.assertEquals(company.name, "Alice Cooper")
 
 
 class JobListTest(TestCase):
@@ -270,14 +270,14 @@ class JobListTest(TestCase):
 
     def test_job_list(self):
         for job in self.jobs:
-            assert job.title == "Test Job"
+            self.assertEquals(job.title, "Test Job")
 
     def test_job_count(self):
-        assert len(self.jobs) == 1
+        self.assertEquals(len(self.jobs), 1)
 
     def test_job_index(self):
         job = self.jobs[0]
-        assert job.title == "Test Job"
+        self.assertEquals(job.title, "Test Job")
 
 
 class TeamListTest(TestCase):
@@ -287,15 +287,15 @@ class TeamListTest(TestCase):
 
     def test_team_list(self):
         for team in self.teams:
-            assert team.name == "Alice Cooper"
-            assert team.status == "active"
+            self.assertEquals(team.name, "Alice Cooper")
+            self.assertEquals(team.status, "active")
 
     def test_team_count(self):
-        assert len(self.teams) == 1
+        self.assertEquals(len(self.teams), 1)
 
     def test_team_index(self):
         team = self.teams[0]
-        assert team.name == "Alice Cooper"
+        self.assertEquals(team.name, "Alice Cooper")
 
 
 class OfferListTest(TestCase):
@@ -304,15 +304,15 @@ class OfferListTest(TestCase):
 
     def test_offer_list(self):
         for offer in self.offers:
-            assert offer.provider__name == "Bob Bobberson"
-            assert offer.provider__id == "bbobberson"
+            self.assertEquals(offer.provider__name, "Bob Bobberson")
+            self.assertEquals(offer.provider__id, "bbobberson")
 
     def test_offer_count(self):
-        assert len(self.offers) == 1
+        self.assertEquals(len(self.offers), 1)
 
     def test_offers_index(self):
         offer = self.offers[0]
-        assert offer.provider__name == "Bob Bobberson"
+        self.assertEquals(offer.provider__name, "Bob Bobberson")
 
 
 class UserRoleListTest(TestCase):
@@ -344,19 +344,19 @@ class JobPosterTest(TestCase):
 
     def test_get_companies(self):
         for company in self.job_poster.companies:
-            assert company.name == "Alice Cooper"            
+            self.assertEquals(company.name, "Alice Cooper")
 
     def test_get_jobs(self):
         for company in self.job_poster.companies:
             for job in self.job_poster.jobs(company):
-                assert job.title == "Test Job"
+                self.assertEquals(job.title, "Test Job")
 
     def test_get_teams(self):
         for team in self.job_poster.teams:
-            assert team.name == "Alice Cooper"
+            self.assertEquals(team.name, "Alice Cooper")
 
     def test_get_offers(self):
         for company in self.job_poster.companies:
             for job in self.job_poster.jobs(company):
                 for offer in self.job_poster.offers(job):
-                    assert offer.provider__name == "Bob Bobberson"
+                    self.assertEquals(offer.provider__name, "Bob Bobberson")
