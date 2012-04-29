@@ -55,8 +55,8 @@ class ReportsTest(flaskext.testing.TestCase):
             _client = get_client(key="12345_public",
                                 secret="12345_secret",
                                 user=self.user)
-        assert _client.oauth_access_token == self.user.access_token
-        assert _client.oauth_access_token_secret == self.user.access_token_secret
+        self.assertEquals(_client.oauth_access_token, self.user.access_token)
+        self.assertEquals(_client.oauth_access_token_secret, self.user.access_token_secret)
 
     def test_generate_offers_report(self):
         company = self.job_poster.companies[0]
@@ -64,8 +64,8 @@ class ReportsTest(flaskext.testing.TestCase):
         filename, output = generate_offers_report(self.job_poster, job)
         expected_result = '''provider__id,provider__name,provider__profile_url,provider_team__reference,hourly_charge_rate,hourly_pay_rate,interview_status,candidacy_status,modified_time\r\nbbobberson,Bob Bobberson,https://www.odesk.com/users/~~ciphertext,,55.56,50,waiting_for_provider,rejected,1334712930000\r\n'''
 
-        assert output == expected_result
-        assert filename[-3:] == "csv"
+        self.assertEquals(output, expected_result)
+        self.assertEquals(filename[-3:], "csv")
 
     @patch('odesk.Client')
     def test_generate_reports_first_time(self, mock_client):
@@ -75,8 +75,8 @@ class ReportsTest(flaskext.testing.TestCase):
         mock_client.hr.get_teams.return_value = TEST_TEAMS
         mock_client.hr.get_offers.return_value = TEST_OFFERS        
         for report in generate_reports(self.tmp_reports_dir):
-            assert isinstance(report[1], list) == True
-            assert isinstance(report[1][0], tuple) == True
+            self.assertIsInstance(report[1], list)
+            self.assertIsInstance(report[1][0], tuple)
     
 
 class ReportLogTest(flaskext.testing.TestCase):    
@@ -114,11 +114,11 @@ class ReportLogTest(flaskext.testing.TestCase):
         with self.report.report_file() as report_file:
             self.report.filename = os.path.basename(report_file.name)
             self.db.session.commit()
-            assert "{0}/{1}/{2}".format(self.report.reports_dir,
+            self.assertEquals("{0}/{1}/{2}".format(self.report.reports_dir,
                                         self.report.user_id,
-                                        self.report.filename) == report_file.name
+                                        self.report.filename), report_file.name)
 
     def test_sha1(self):
         self.test_new_report()
         sha1 = self.report._sha1()
-        assert len(sha1) == 40
+        self.assertEquals(len(sha1), 40)
