@@ -354,7 +354,7 @@ class JobPosterTest(TestCase):
         client.hr.get_jobs.return_value = TEST_JOBS
         client.hr.get_teams.return_value = TEST_TEAMS
         client.hr.get_offers.return_value = TEST_OFFERS
-        client.hr.get_user_roles.return_value = TEST_ROLES
+        client.hr.get_user_role.return_value = TEST_ROLES
         user = Mock()
 
         self.job_poster = api.JobPoster(user, client)

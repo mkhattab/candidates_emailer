@@ -267,7 +267,7 @@ class JobPoster(object):
             return offers
 
     def _get_user_roles(self):
-        return self.client.hr.get_user_roles()
+        return self.client.hr.get_user_role()
     
     def _get_companies(self):
         return self.client.hr.get_companies()
