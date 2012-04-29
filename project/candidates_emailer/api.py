@@ -72,29 +72,17 @@ class BaseAPIObject(object):
 class Company(BaseAPIObject):
     type = "company"
     
-    def __init__(self, _json_cache=None):
-        super(Company, self).__init__(_json_cache)
-
 
 class Job(BaseAPIObject):
     type = "job"
-    
-    def __init__(self, _json_cache=None):
-        super(Job, self).__init__(_json_cache)
 
 
 class Team(BaseAPIObject):
     type = "team"
     
-    def __init__(self, _json_cache=None):
-        super(Team, self).__init__(_json_cache)
-
 
 class Offer(BaseAPIObject):
     type = "offer"
-
-    def __init__(self, _json_cache=None):
-        super(Offer, self).__init__(_json_cache)
 
 
 class BaseList(object):
