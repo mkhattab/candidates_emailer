@@ -5,8 +5,25 @@ Flask-Script==0.3.3
 Flask-Testing==0.3
 Flask-WTF==0.6
 Flask-oDesk==0.4.1.1
+Jinja2==2.6
+SQLAlchemy==0.7.6
+WTForms==1.0.1
+Werkzeug==0.8.3
+argparse==1.2.1
+blinker==1.2
+chardet==1.0.1
+httplib2==0.7.4
+ipdb==0.6.1
+ipython==0.12
+lamson==1.1
+lockfile==0.9.1
 mock==0.8.0
 nose==1.1.2
+oauth2==1.5.211
+python-daemon==1.6
+-e git://github.com/odesk/python-odesk.git@b3ea18f3ff2ef16e0a8d5e6e1c6259df00785ffe#egg=python_odesk-dev
+simplejson==2.5.0
+twill==0.9
 uWSGI==1.1.2
-
--e git+git://github.com/odesk/python-odesk.git#egg=python-odesk
+unittest2==0.5.1
+wsgiref==0.1.2
