@@ -35,12 +35,12 @@ def get_client(key=ODESK_KEY, secret=ODESK_SECRET,
     return client
 
 
-def generate_offers_report(job_poster, job):
+def generate_offers_report(job_poster, job, columns=OFFERS_REPORT_COLUMNS):
     output = StringIO.StringIO()
     writer = csv.writer(output)
-    writer.writerow(OFFERS_REPORT_COLUMNS)
-    writer.writerows([[offer.__getattr__(col)
-                       for col in OFFERS_REPORT_COLUMNS]
+    writer.writerow(columns)
+    writer.writerows([[offer.get(col, '')
+                       for col in columns]
                      for offer in job_poster.offers(job)])
     filename = "{0}_{1}.csv".format("OffersReport",
                                         job.reference)

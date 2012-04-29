@@ -71,6 +71,17 @@ class ReportsTest(flaskext.testing.TestCase):
         self.assertEquals(output, expected_result)
         self.assertEquals(filename[-3:], "csv")
 
+    def test_generate_offers_report_missing_fields(self):
+        cols = list(OFFERS_REPORT_COLUMNS[:-1])
+        cols.extend(['missing_field', OFFERS_REPORT_COLUMNS[-1]])
+        company = self.job_poster.companies[0]
+        job = self.job_poster.jobs(company)[0]
+        filename, output = generate_offers_report(self.job_poster, job, cols)
+        expected_result = '''provider__id,provider__name,provider__profile_url,provider_team__reference,hourly_charge_rate,hourly_pay_rate,interview_status,candidacy_status,missing_field,modified_time\r\nbbobberson,Bob Bobberson,https://www.odesk.com/users/~~ciphertext,,55.56,50,waiting_for_provider,rejected,,1334712930000\r\n'''
+
+        self.assertEquals(output, expected_result)
+        self.assertEquals(filename[-3:], "csv")
+
     @patch('odesk.Client')
     def test_generate_reports_first_time(self, mock_client):
         mock_client = mock_client()

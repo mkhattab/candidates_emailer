@@ -37,6 +37,12 @@ class BaseAPIObject(object):
     def __init__(self, _json_cache=None):
         self._json_cache = _json_cache
 
+    def get(self, name, default=None):
+        try:
+            return self._try_convert_field(name, self._json_cache[name])
+        except KeyError:
+            return default
+        
     def __getattr__(self, name):
         if not self._json_cache: raise AttributeError("That field does not exist")
         try:
