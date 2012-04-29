@@ -315,6 +315,22 @@ class OfferListTest(TestCase):
         assert offer.provider__name == "Bob Bobberson"
 
 
+class UserRoleListTest(TestCase):
+    def setUp(self):
+        self.roles = api.UserRoleList(Mock(), _json_cache=TEST_ROLES)
+
+    def test_role_list(self):
+        for role in self.roles:
+            self.assertEquals(role.user__first_name, "Alice")
+
+    def test_role_count(self):
+        self.assertEquals(len(self.roles), 2)
+
+    def test_role_index(self):
+        role = self.roles[1]
+        self.assertEquals(role.company__name, "Acme Corp")
+
+        
 class JobPosterTest(TestCase):
     def setUp(self):
         client = Mock()

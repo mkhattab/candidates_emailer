@@ -85,6 +85,10 @@ class Offer(BaseAPIObject):
     type = "offer"
 
 
+class UserRole(BaseAPIObject):
+    type = "userrole"
+    
+
 class BaseList(object):
     def __init__(self, client, object_cls, _json_cache=None):
         self.client = client
@@ -96,7 +100,10 @@ class BaseList(object):
             self.objects = []
         
         if isinstance(_json_cache, dict):
-            self.lister = _json_cache["lister"]
+            try:
+                self.lister = _json_cache["lister"]
+            except KeyError:
+                self.lister = None                
             objects = _json_cache[self.object_cls.type]            
             if isinstance(objects, list):
                 self.objects = objects
@@ -167,6 +174,13 @@ class OfferList(BaseList):
                                        _json_cache=_json_cache)
 
 
+class UserRoleList(BaseList):
+    def __init__(self, client, _json_cache=None):
+        super(UserRoleList, self).__init__(client,
+                                       UserRole,
+                                       _json_cache=_json_cache)
+
+        
 class JobPoster(object):
     def __init__(self, user, client):    
         self.user = user
