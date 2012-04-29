@@ -4,8 +4,10 @@ __all__ = ["Job",
            "Team",
            "Company",
            "Offer",
+           "UserRole",
            "JobList",
            "TeamList",
+           "UserRoleList",
            "CompanyList",
            "OfferList",
            "JobPoster"]
@@ -145,7 +147,22 @@ class BaseList(object):
         except IndexError:
             raise NotImplementedError("Paging has not been implemented yet")
 
+    def __delitem__(self, key):
+        if not isinstance(key, int):
+            raise IndexError("list indices must be integers, not str")
 
+        length = len(self)
+        if key > length:
+            raise IndexError("list assignment out of range")
+
+        try:
+            del self.objects[key]
+            if self.lister:
+                self.lister['total_items'] = str(length - 1)
+        except IndexError:
+            raise NotImplementedError("Paging has not been implemented yet")
+
+        
 class TeamList(BaseList):
     def __init__(self, client, _json_cache=None):
         super(TeamList, self).__init__(client,
@@ -180,6 +197,15 @@ class UserRoleList(BaseList):
                                        UserRole,
                                        _json_cache=_json_cache)
 
+    def has_permissions(self, company, permissions):
+        for role in self.__iter__():
+            if role.company__reference == company.reference:
+                if role.permissions:
+                    return all(perm in role.permissions['permission']
+                               for perm in permissions)
+                else:
+                    return False
+
         
 class JobPoster(object):
     def __init__(self, user, client):    
@@ -189,15 +215,24 @@ class JobPoster(object):
         self._teams = None
         self._jobs = {}
         self._offers = {}
+        self._roles = {}
 
     @property
     def companies(self):
+        if not self._roles:
+            self._roles = UserRoleList(self.client,
+                                       _json_cache=self._get_user_roles())
         if self._companies:
             return self._companies
         else:
             data = self._get_companies()
             self._companies = CompanyList(self.client,
                                           _json_cache=data)
+            for idx, company in enumerate(self._companies):
+                if not self._roles.has_permissions(company,
+                                                   ['manage_recruiting', 'manage_employment']):
+                    del self._companies[idx]
+                    
             return self._companies
 
     @property
@@ -230,7 +265,10 @@ class JobPoster(object):
             offers = OfferList(self.client, _json_cache=data)
             self._offers[job.reference] = offers
             return offers
-        
+
+    def _get_user_roles(self):
+        return self.client.hr.get_user_roles()
+    
     def _get_companies(self):
         return self.client.hr.get_companies()
 

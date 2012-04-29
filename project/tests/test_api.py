@@ -8,6 +8,10 @@ from candidates_emailer import api
 TEST_COMPANIES = [{u'name': u'Alice Cooper',
                    u'owner_user_id': u'acooper',
                    u'reference': u'123456',
+                   u'status': u'active'},
+                  {u'name': u'Acme Corp',
+                   u'owner_user_id': u'acmecorp',
+                   u'reference': u'123',
                    u'status': u'active'}]
 
 TEST_ROLES = {u'userrole': [{u'affiliation_status': u'none',
@@ -244,6 +248,16 @@ class BaseListTest(TestCase):
 
         item = self.objects_list[0]
         self.assertEquals(item.value, "test")
+
+    def test_delete_object(self):
+        del self.many_objects_dict[0]
+        self.assertEquals(len(self.many_objects_dict), 0)
+
+        del self.one_object_dict[0]
+        self.assertEquals(len(self.one_object_dict), 0)
+
+        del self.objects_list[0]
+        self.assertEquals(len(self.objects_list), 0)
     
 
 class CompanyListTest(TestCase):
@@ -252,12 +266,11 @@ class CompanyListTest(TestCase):
                                          _json_cache=TEST_COMPANIES)
 
     def test_get_company_list(self):
-        for company in self.companies:
-            self.assertEquals(company.name, "Alice Cooper")
-            self.assertEquals(company.reference, "123456")
+        companies = [(company.name, company.reference) for company in self.companies]
+        self.assertIn(("Alice Cooper", '123456'), companies)
 
     def test_company_count(self):
-        self.assertEquals(len(self.companies), 1)
+        self.assertEquals(len(self.companies), 2)
 
     def test_company_index(self):
         company = self.companies[0]
@@ -338,13 +351,14 @@ class JobPosterTest(TestCase):
         client.hr.get_jobs.return_value = TEST_JOBS
         client.hr.get_teams.return_value = TEST_TEAMS
         client.hr.get_offers.return_value = TEST_OFFERS
+        client.hr.get_user_roles.return_value = TEST_ROLES
         user = Mock()
 
         self.job_poster = api.JobPoster(user, client)
 
     def test_get_companies(self):
-        for company in self.job_poster.companies:
-            self.assertEquals(company.name, "Alice Cooper")
+        companies = [company.name for company in self.job_poster.companies]
+        self.assertIn("Alice Cooper", companies)
 
     def test_get_jobs(self):
         for company in self.job_poster.companies:
@@ -360,3 +374,7 @@ class JobPosterTest(TestCase):
             for job in self.job_poster.jobs(company):
                 for offer in self.job_poster.offers(job):
                     self.assertEquals(offer.provider__name, "Bob Bobberson")
+
+    def test_get_authorized_companies(self):
+        companies = [company.name for company in self.job_poster.companies]
+        self.assertNotIn("Acme Corp", companies)

@@ -7,7 +7,7 @@ from mock import Mock, patch, MagicMock
 import flaskext.testing
 
 from candidates_emailer.reports import *
-from test_api import TEST_JOBS, TEST_TEAMS, TEST_OFFERS, TEST_COMPANIES
+from test_api import TEST_JOBS, TEST_TEAMS, TEST_OFFERS, TEST_COMPANIES, TEST_ROLES
 
 
 class ReportsTest(flaskext.testing.TestCase):
@@ -36,7 +36,8 @@ class ReportsTest(flaskext.testing.TestCase):
         client.hr.get_jobs.return_value = TEST_JOBS
         client.hr.get_teams.return_value = TEST_TEAMS
         client.hr.get_offers.return_value = TEST_OFFERS
-
+        client.hr.get_user_roles.return_value = TEST_ROLES
+        
         self.job_poster = JobPoster(self.user, client)
         
     def tearDown(self):
@@ -73,7 +74,8 @@ class ReportsTest(flaskext.testing.TestCase):
         mock_client.hr.get_companies.return_value = TEST_COMPANIES
         mock_client.hr.get_jobs.return_value = TEST_JOBS
         mock_client.hr.get_teams.return_value = TEST_TEAMS
-        mock_client.hr.get_offers.return_value = TEST_OFFERS        
+        mock_client.hr.get_offers.return_value = TEST_OFFERS
+        mock_client.hr.get_user_roles.return_value = TEST_ROLES
         for report in generate_reports(self.tmp_reports_dir):
             self.assertIsInstance(report[1], list)
             self.assertIsInstance(report[1][0], tuple)
